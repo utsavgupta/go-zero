@@ -93,6 +93,17 @@ func getJwtTrans(api *spec.ApiSpec) []string {
 	return jwtTransList.KeysStr()
 }
 
+func getOIDC(api *spec.ApiSpec) []string {
+	oidcProviders := collection.NewSet()
+	for _, g := range api.Service.Groups {
+		oidc := g.GetAnnotation("oidc")
+		if len(oidc) > 0 {
+			oidcProviders.Add(oidc)
+		}
+	}
+	return oidcProviders.KeysStr()
+}
+
 func getMiddleware(api *spec.ApiSpec) []string {
 	result := collection.NewSet()
 	for _, g := range api.Service.Groups {
