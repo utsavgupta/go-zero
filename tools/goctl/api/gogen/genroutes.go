@@ -37,7 +37,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 `
 	routesAdditionTemplate = `
 	server.AddRoutes(
-		{{.routes}} {{.jwt}}{{.signature}} {{.prefix}} {{.timeout}} {{.maxBytes}}
+		{{.routes}} {{.jwt}}{{.signature}} {{.prefix}} {{.timeout}} {{.maxBytes}} {{.oidc}}
 	)
 `
 	timeoutThreshold = time.Millisecond
@@ -59,6 +59,8 @@ type (
 	group struct {
 		routes           []route
 		jwtEnabled       bool
+		oidcEnabled      bool
+		oidcProviderName string
 		signatureEnabled bool
 		authName         string
 		timeout          string
@@ -170,6 +172,16 @@ rest.WithPrefix("%s"),`, g.prefix)
 			routes = strings.TrimSpace(gbuilder.String())
 		}
 
+		var oidc string
+		if g.oidcEnabled {
+			oidc = fmt.Sprintf("\n rest.WithOidc(http.DefaultClient, serverCtx.Config.%s.OpenIDConfigurationURL, serverCtx.Config.%s.IntrospectEndpointKey, serverCtx.Config.%s.ClientId, serverCtx.Config.%s.ClientSecret),",
+				g.oidcProviderName,
+				g.oidcProviderName,
+				g.oidcProviderName,
+				g.oidcProviderName,
+			)
+		}
+
 		if err := gt.Execute(&builder, map[string]string{
 			"routes":    routes,
 			"jwt":       jwt,
@@ -177,6 +189,7 @@ rest.WithPrefix("%s"),`, g.prefix)
 			"prefix":    prefix,
 			"timeout":   timeout,
 			"maxBytes":  maxBytes,
+			"oidc":      oidc,
 		}); err != nil {
 			return err
 		}
@@ -266,6 +279,11 @@ func getRoutes(api *spec.ApiSpec) ([]group, error) {
 		jwtTrans := g.GetAnnotation(jwtTransKey)
 		if len(jwtTrans) > 0 {
 			groupedRoutes.jwtTrans = jwtTrans
+		}
+		oidcProvider := g.GetAnnotation("oidc")
+		if len(oidcProvider) > 0 {
+			groupedRoutes.oidcProviderName = oidcProvider
+			groupedRoutes.oidcEnabled = true
 		}
 
 		signature := g.GetAnnotation("signature")

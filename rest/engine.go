@@ -79,6 +79,22 @@ func (ng *engine) appendAuthHandler(fr featuredRoutes, chn chain.Chain,
 	return verifier(chn)
 }
 
+func (ng *engine) appendOidcHandler(fr featuredRoutes, chn chain.Chain,
+	verifier func(chain.Chain) chain.Chain) chain.Chain {
+
+	if fr.oidc.enabled {
+		chn = chn.Append(handler.OidcAuthenticate(
+			fr.oidc.client,
+			fr.oidc.configEndpoint,
+			fr.oidc.introspectionEndpointKey,
+			fr.oidc.clientId,
+			fr.oidc.clientSecret,
+		))
+	}
+
+	return verifier(chn)
+}
+
 func (ng *engine) bindFeaturedRoutes(router httpx.Router, fr featuredRoutes, metrics *stat.Metrics) error {
 	verifier, err := ng.signatureVerifier(fr.signature)
 	if err != nil {
@@ -102,6 +118,7 @@ func (ng *engine) bindRoute(fr featuredRoutes, router httpx.Router, metrics *sta
 	}
 
 	chn = ng.appendAuthHandler(fr, chn, verifier)
+	chn = ng.appendOidcHandler(fr, chn, verifier)
 
 	for _, middleware := range ng.middlewares {
 		chn = chn.Append(convertMiddleware(middleware))
