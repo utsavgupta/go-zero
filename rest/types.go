@@ -27,12 +27,10 @@ type (
 	}
 
 	oidcSetting struct {
-		enabled                  bool
-		client                   *http.Client
-		configEndpoint           *url.URL
-		introspectionEndpointKey string
-		clientId                 string
-		clientSecret             string
+		enabled     bool
+		client      *http.Client
+		providerUrl *url.URL
+		clientId    string
 	}
 
 	signatureSetting struct {

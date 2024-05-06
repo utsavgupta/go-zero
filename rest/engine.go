@@ -85,10 +85,8 @@ func (ng *engine) appendOidcHandler(fr featuredRoutes, chn chain.Chain,
 	if fr.oidc.enabled {
 		chn = chn.Append(handler.OidcAuthenticate(
 			fr.oidc.client,
-			fr.oidc.configEndpoint,
-			fr.oidc.introspectionEndpointKey,
+			fr.oidc.providerUrl,
 			fr.oidc.clientId,
-			fr.oidc.clientSecret,
 		))
 	}
 

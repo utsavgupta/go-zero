@@ -174,9 +174,7 @@ rest.WithPrefix("%s"),`, g.prefix)
 
 		var oidc string
 		if g.oidcEnabled {
-			oidc = fmt.Sprintf("\n rest.WithOidc(http.DefaultClient, serverCtx.Config.%s.OpenIDConfigurationURL, serverCtx.Config.%s.IntrospectEndpointKey, serverCtx.Config.%s.ClientId, serverCtx.Config.%s.ClientSecret),",
-				g.oidcProviderName,
-				g.oidcProviderName,
+			oidc = fmt.Sprintf("\n rest.WithOidc(http.DefaultClient, serverCtx.Config.%s.ProviderUrl, serverCtx.Config.%s.ClientId),",
 				g.oidcProviderName,
 				g.oidcProviderName,
 			)

@@ -26,10 +26,8 @@ const (
 `
 
 	oidcTemplate = ` struct {
-		OpenIDConfigurationURL string
-		IntrospectEndpointKey  string
-		ClientId               string
-		ClientSecret           string
+		ProviderUrl string
+		ClientId    string
 	}
 `
 )
