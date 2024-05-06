@@ -24,6 +24,12 @@ const (
 		PrevSecret string
 	}
 `
+
+	oidcTemplate = ` struct {
+		ProviderUrl string
+		ClientId    string
+	}
+`
 )
 
 //go:embed config.tpl
@@ -46,6 +52,13 @@ func genConfig(dir string, cfg *config.Config, api *spec.ApiSpec) error {
 	for _, item := range jwtTransNames {
 		jwtTransList = append(jwtTransList, fmt.Sprintf("%s %s", item, jwtTransTemplate))
 	}
+
+	oidcNames := getOIDC(api)
+	var oidcList []string
+	for _, item := range oidcNames {
+		oidcList = append(oidcList, fmt.Sprintf("%s %s", item, oidcTemplate))
+	}
+
 	authImportStr := fmt.Sprintf("\"%s/rest\"", vars.ProjectOpenSourceURL)
 
 	return genFile(fileGenConfig{
@@ -60,6 +73,7 @@ func genConfig(dir string, cfg *config.Config, api *spec.ApiSpec) error {
 			"authImport": authImportStr,
 			"auth":       strings.Join(auths, "\n"),
 			"jwtTrans":   strings.Join(jwtTransList, "\n"),
+			"oidc":       strings.Join(oidcList, "\n"),
 		},
 	})
 }

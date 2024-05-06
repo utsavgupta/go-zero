@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 
@@ -51,6 +52,9 @@ func Authorize(secret string, opts ...AuthorizeOption) func(http.Handler) http.H
 	parser := token.NewTokenParser()
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			fmt.Println("[Local] Default JWT Auth Handler")
+
 			tok, err := parser.ParseToken(r, secret, authOpts.PrevSecret)
 			if err != nil {
 				unauthorized(w, r, err, authOpts.Callback)

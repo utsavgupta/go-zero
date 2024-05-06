@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/http"
+	"net/url"
 	"path"
 	"time"
 
@@ -176,6 +177,19 @@ func WithJwt(secret string) RouteOption {
 		validateSecret(secret)
 		r.jwt.enabled = true
 		r.jwt.secret = secret
+	}
+}
+
+// WithOidc returns a func to enable Oidc authentication in given route.
+func WithOidc(client *http.Client, providerUrl, clientId string) RouteOption {
+	return func(r *featuredRoutes) {
+		var err error
+		r.oidc.enabled = true
+		r.oidc.client = client
+		if r.oidc.providerUrl, err = url.Parse(providerUrl); err != nil {
+			panic(err)
+		}
+		r.oidc.clientId = clientId
 	}
 }
 

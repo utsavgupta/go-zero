@@ -6,4 +6,5 @@ type Config struct {
 	rest.RestConf
 	{{.auth}}
 	{{.jwtTrans}}
+	{{.oidc}}
 }

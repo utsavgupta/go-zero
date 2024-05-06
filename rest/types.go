@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -25,6 +26,13 @@ type (
 		prevSecret string
 	}
 
+	oidcSetting struct {
+		enabled     bool
+		client      *http.Client
+		providerUrl *url.URL
+		clientId    string
+	}
+
 	signatureSetting struct {
 		SignatureConf
 		enabled bool
@@ -34,6 +42,7 @@ type (
 		timeout   time.Duration
 		priority  bool
 		jwt       jwtSetting
+		oidc      oidcSetting
 		signature signatureSetting
 		routes    []Route
 		maxBytes  int64
