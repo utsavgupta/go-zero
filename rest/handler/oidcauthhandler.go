@@ -23,8 +23,6 @@ func OidcAuthenticate(client *http.Client, providerUrl *url.URL, clientId string
 
 	ctx := oidc.ClientContext(context.Background(), client)
 
-	fmt.Println(fmt.Sprintf("%s://%s", providerUrl.Scheme, providerUrl.Host))
-
 	provider, err := oidc.NewProvider(ctx, fmt.Sprintf("%s://%s", providerUrl.Scheme, providerUrl.Host))
 
 	if err != nil {
